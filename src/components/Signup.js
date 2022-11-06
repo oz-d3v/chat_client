@@ -1,12 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 
-export const Signup = () => {
+const port = 3001;
+const socket = io.connect(`http://localhost:${port}`);
+
+export const SignIn = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("connected");
+    });
+  }, []);
 
   const handleSubmit = () => {
-    navigate("/chat", { state: { username: username } });
+    socket.emit("login", username, password);
+
+    socket.on("verifying-login", (status, user) => {
+      console.log("status", status);
+      if (status === "login-success") {
+        console.log(status, user);
+        navigate("/chat", { state: { username } });
+      } else {
+        alert("Login failed");
+      }
+    });
+    // navigate("/chat", { state: { username: username } });
   };
 
   return (
@@ -27,6 +49,7 @@ export const Signup = () => {
         <input
           className="my-2 w-72 border p-2"
           type="password"
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
       </div>
@@ -43,7 +66,7 @@ export const Signup = () => {
           <h1>Forget Password</h1>
         </div>
         <div>
-          <h1 className="underline underline-offset-2">Signup</h1>
+          <h1 className="underline underline-offset-2">Login</h1>
         </div>
       </div>
     </div>

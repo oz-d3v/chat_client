@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Signup } from "./components/Signup";
+import { SignIn } from "./components/SignIn";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -12,7 +12,7 @@ root.render(
     {/* <App /> */}
     <Router>
       <Routes>
-        <Route path="/" element={<Signup />} />
+        <Route path="/" element={<SignIn />} />
         <Route path="/chat" element={<App />} />
       </Routes>
     </Router>
