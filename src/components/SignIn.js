@@ -1,10 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SocketContext } from "./../Socket";
 
-export const SignIn = () => {
-  const socket = useContext(SocketContext);
-
+export const SignIn = ({ socket }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -12,15 +9,13 @@ export const SignIn = () => {
   const handleSubmit = () => {
     socket.emit("login", username, password);
 
-    socket.on("verifying-login", (status, users) => {
-      console.log("status", status);
+    socket.on("verifying-login", (status) => {
       if (status === "login-success") {
-        navigate("/chat", { state: { username, users } });
+        navigate("/chat", { state: { username } });
       } else {
         alert("Login failed");
       }
     });
-    // navigate("/chat", { state: { username: username } });
   };
 
   return (

@@ -5,17 +5,19 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SignIn } from "./components/SignIn";
-import { SocketContext, socket } from "./Socket";
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3001", () => {
+  console.log("connected to server", socket.id);
+});
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <SocketContext.Provider value={socket}>
-    <Router>
-      <Routes>
-        <Route path="/" element={<SignIn />} />
-        <Route path="/chat" element={<App />} />
-      </Routes>
-    </Router>
-  </SocketContext.Provider>
+  <Router>
+    <Routes>
+      <Route path="/" element={<SignIn socket={socket} />} />
+      <Route path="/chat" element={<App socket={socket} />} />
+    </Routes>
+  </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function
