@@ -5,18 +5,17 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SignIn } from "./components/SignIn";
-
+import { SocketContext, socket } from "./Socket";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    {/* <App /> */}
+  <SocketContext.Provider value={socket}>
     <Router>
       <Routes>
         <Route path="/" element={<SignIn />} />
         <Route path="/chat" element={<App />} />
       </Routes>
     </Router>
-  </React.StrictMode>
+  </SocketContext.Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

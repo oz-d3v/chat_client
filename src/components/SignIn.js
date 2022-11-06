@@ -1,29 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
-
-const port = 3001;
-const socket = io.connect(`http://localhost:${port}`);
+import { SocketContext } from "./../Socket";
 
 export const SignIn = () => {
-  const navigate = useNavigate();
+  const socket = useContext(SocketContext);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected");
-    });
-  }, []);
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     socket.emit("login", username, password);
 
-    socket.on("verifying-login", (status, user) => {
+    socket.on("verifying-login", (status, users) => {
       console.log("status", status);
       if (status === "login-success") {
-        console.log(status, user);
-        navigate("/chat", { state: { username } });
+        navigate("/chat", { state: { username, users } });
       } else {
         alert("Login failed");
       }
