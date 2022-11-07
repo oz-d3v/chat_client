@@ -1,12 +1,8 @@
 import "./Chatroom.css";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-
-// Connect to the server
-
-// const channelID = socket.id;
-
-function Chatroom({ socket }) {
+import { socket } from "../../Socket";
+function Chatroom() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
   const [incomingMessage, setIncomingMessage] = useState([]);
@@ -15,19 +11,8 @@ function Chatroom({ socket }) {
 
   const location = useLocation();
 
-  const getInitialData = () => {
-    socket.on("get-messages", (messages) => {
-      setChatHistory(messages);
-    });
-
-    socket.on("fetch-users", (users) => {
-      console.log(users);
-      setUsers(users);
-    });
-  };
-
   useEffect(() => {
-    getInitialData();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -37,11 +22,20 @@ function Chatroom({ socket }) {
     });
   }, [incomingMessage, location.state.username]);
 
+  const fetchData = async () => {
+    const fetchUsers = await socket.getUsers();
+    setUsers(fetchUsers);
+
+    const fetchChatHistory = await socket.getChatHistory();
+    setChatHistory(fetchChatHistory);
+  };
+
   const handleSubmit = () => {
     setMessage(""); // empty input field
     socket.emit("send-message", message, username);
   };
 
+  console.log("users", users);
   return (
     <div className="font-sans antialiased h-screen flex">
       <div className="flex flex-col flex-shrink-0 w-64 border-r border-gray-300 bg-gray-100">
@@ -57,16 +51,23 @@ function Chatroom({ socket }) {
               <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
             <span className="ml-2 leading-none">Users</span>
-            <div>
-              {users.map((user, idx) => {
-                return (
-                  <div key={idx}>
-                    <span className="ml-2 leading-none">{user.username}</span>
-                  </div>
-                );
-              })}
-            </div>
           </div>
+
+          {users.map((user, idx) => {
+            return (
+              <div className="mt-3 flex items-center h-8 hover:bg-gray-300 text-sm px-3">
+                <div style={{ width: 80 }}>
+                  <span className="ml-2 leading-none">{user.username}</span>
+                </div>
+                {user.onlineStatus ? (
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                ) : (
+                  <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                )}
+              </div>
+            );
+          })}
+
           <div className="mt-4">
             <div id="messages_list">
               <span className="leading-none font-bold pl-3">#Chatroom</span>
