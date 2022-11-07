@@ -2,6 +2,8 @@ import "./Chatroom.css";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { socket } from "../../Socket";
+import { useNavigate } from "react-router-dom";
+
 function Chatroom() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
@@ -10,10 +12,11 @@ function Chatroom() {
   const [users, setUsers] = useState([]);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [users]);
 
   useEffect(() => {
     setUsername(location.state.username);
@@ -33,6 +36,13 @@ function Chatroom() {
   const handleSubmit = () => {
     setMessage(""); // empty input field
     socket.emit("send-message", message, username);
+  };
+
+  const handleLogout = () => {
+    socket.emit("logout", username);
+    socket.on("verifying-logout", () => {
+      navigate("/");
+    });
   };
 
   console.log("users", users);
@@ -76,16 +86,17 @@ function Chatroom() {
         </div>
       </div>
       <div className="flex-1 flex flex-col bg-white overflow-hidden">
-        <div className="border-b flex px-6 py-2 items-center flex-none">
-          <div className="flex flex-col">
-            <h3 className="text-grey-darkest mb-1 font-extrabold">
-              Logged in as {username}
-            </h3>
-            <div className="text-grey-dark text-sm truncate">
-              Chit-chattin' about ugly HTML and mixing of concerns.
-            </div>
-          </div>
-          <div className="ml-auto hidden md:block"></div>
+        <div className="mx-7 my-3 flex justify-between text-sm font-semibold">
+          <h3 className="text-grey-darkest mb-1 font-extrabold">
+            Logged in as {username}
+          </h3>
+          <button
+            className="w-20 h-8 rounded-full bg-red-500"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+          {/* <div className="text-grey-dark text-sm truncate">Logout</div> */}
         </div>
         Chat messages
         <div className="px-6 py-4 flex-1 overflow-y-scroll">
