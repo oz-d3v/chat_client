@@ -45,7 +45,6 @@ function Chatroom() {
     });
   };
 
-  console.log("users", users);
   return (
     <div className="font-sans antialiased h-screen flex">
       <div className="flex flex-col flex-shrink-0 w-64 border-r border-gray-300 bg-gray-100">
@@ -65,7 +64,10 @@ function Chatroom() {
 
           {users.map((user, idx) => {
             return (
-              <div className="mt-3 flex items-center h-8 hover:bg-gray-300 text-sm px-3">
+              <div
+                key={idx}
+                className="mt-3 flex items-center h-8 hover:bg-gray-300 text-sm px-3"
+              >
                 <div style={{ width: 80 }}>
                   <span className="ml-2 leading-none">{user.username}</span>
                 </div>
@@ -100,7 +102,7 @@ function Chatroom() {
         </div>
         Chat messages
         <div className="px-6 py-4 flex-1 overflow-y-scroll">
-          {chatHistory.map((message, idx) => {
+          {/* {chatHistory.map((message, idx) => {
             return (
               <div key={idx} className="flex items-start mb-4 text-sm">
                 <div className="flex-1 overflow-hidden">
@@ -111,7 +113,7 @@ function Chatroom() {
                 </div>
               </div>
             );
-          })}
+          })} */}
           {incomingMessage.map((msg, idx) => {
             return (
               <div key={idx} className="flex items-start mb-4 text-sm">
