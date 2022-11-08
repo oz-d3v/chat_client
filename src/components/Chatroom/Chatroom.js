@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 function Chatroom() {
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
-  const [incomingMessage, setIncomingMessage] = useState([]);
+  const [incomingMessage, setIncomingMessage] = useState([]); //conflict between this and chat history
   const [chatHistory, setChatHistory] = useState([]);
   const [users, setUsers] = useState([]);
 
@@ -15,14 +15,14 @@ function Chatroom() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
-  }, [users]);
+    fetchData(); //fetching chat history and users from the server
+  }, [users, chatHistory]);
 
   useEffect(() => {
     setUsername(location.state.username);
     socket.on("receive-message", (message, secondPerson) => {
       setIncomingMessage([...incomingMessage, { message, secondPerson }]);
-    });
+    }); // this wont be doing anything if i save chat history. could make a button to fetch chat history, see this later
   }, [incomingMessage, location.state.username]);
 
   const fetchData = async () => {
@@ -102,7 +102,7 @@ function Chatroom() {
         </div>
         Chat messages
         <div className="px-6 py-4 flex-1 overflow-y-scroll">
-          {/* {chatHistory.map((message, idx) => {
+          {chatHistory.map((message, idx) => {
             return (
               <div key={idx} className="flex items-start mb-4 text-sm">
                 <div className="flex-1 overflow-hidden">
@@ -113,8 +113,8 @@ function Chatroom() {
                 </div>
               </div>
             );
-          })} */}
-          {incomingMessage.map((msg, idx) => {
+          })}
+          {/* {incomingMessage.map((msg, idx) => {
             return (
               <div key={idx} className="flex items-start mb-4 text-sm">
                 <div className="flex-1 overflow-hidden">
@@ -125,7 +125,7 @@ function Chatroom() {
                 </div>
               </div>
             );
-          })}
+          })} */}
         </div>
         <div className="pb-6 px-4 flex-none">
           <div className="flex rounded-lg border-2 border-grey overflow-hidden">
@@ -144,6 +144,11 @@ function Chatroom() {
               type="text"
               className="w-full px-4"
               placeholder="Message #general"
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit();
+                }
+              }}
             />
             <button
               onClick={handleSubmit}
