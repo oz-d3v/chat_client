@@ -39,6 +39,11 @@ export const SignIn = () => {
           type="password"
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit();
+            }
+          }}
         />
       </div>
       <div className="my-2 flex justify-center">
